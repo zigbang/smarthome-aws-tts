@@ -32,6 +32,9 @@ voice_options = {
     'zh-CN': [
         {'id': 'Zhiyu', 'name': 'Zhiyu (여성, Neural)', 'gender': 'Female'}
     ],
+    'zh-HK': [
+        {'id': 'Hiujin', 'name': 'Hiujin (여성, Neural)', 'gender': 'Female'}
+    ],
     'en-US': [
         {'id': 'Joanna', 'name': 'Joanna (여성, Neural)', 'gender': 'Female'},
         {'id': 'Matthew', 'name': 'Matthew (남성, Neural)', 'gender': 'Male'},
@@ -54,6 +57,7 @@ def get_default_voice(language_code):
 prefix_map = {
     'ko-KR': 'KR',
     'zh-CN': 'CN',
+    'zh-HK': 'HK',
     'en-US': 'EN'
 }
 
@@ -93,7 +97,7 @@ def create_ssml_text(text, pitch, rate, use_neural=False):
 
 def is_neural_voice(voice_id):
     """음성이 Neural 엔진을 지원하는지 확인"""
-    neural_voices = ['Seoyeon', 'Zhiyu', 'Joanna', 'Matthew', 'Salli', 'Kimberly', 
+    neural_voices = ['Seoyeon', 'Zhiyu', 'Joanna', 'Matthew', 'Salli', 'Kimberly', 'Hiujin',
                      'Kendra', 'Justin', 'Ivy', 'Joey']
     return voice_id in neural_voices
 

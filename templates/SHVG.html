@@ -9,54 +9,585 @@
         body {
             font-family: Arial, sans-serif;
             margin: 50px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         input[type="file"] {
             margin: 20px 0;
         }
         button {
-            padding: 10px 20px;
+            padding: 12px 30px;
             font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        select, input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .slider-container {
+            margin: 15px 0;
+        }
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        .slider-value {
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+            border: none;
+        }
+        input[type="range"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        input[type="range"]:disabled::-webkit-slider-thumb {
+            background: #999;
+            cursor: not-allowed;
+        }
+        input[type="range"]:disabled::-moz-range-thumb {
+            background: #999;
+            cursor: not-allowed;
+        }
+        .pitch-disabled-message {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+        }
+        .section-divider {
+            border-top: 2px solid #e0e0e0;
+            margin: 40px 0;
+            padding-top: 30px;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4CAF50;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            resize: vertical;
+            min-height: 100px;
+            box-sizing: border-box;
+        }
+        .test-button {
+            background-color: #2196F3;
+        }
+        .test-button:hover {
+            background-color: #0b7dda;
+        }
+        .audio-player {
+            margin-top: 15px;
+            width: 100%;
+        }
+        .audio-container {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
 
 <body>
-    <img src="/static/new_logo.png">
-    <h1>CSV to WAV Coverter</h1>
-    
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="file">Upload CSV file:</label>
-        <input type="file" id="file" name="file" required><br>
-        <label for="language">Select Language:</label>
-        <select id="language" name="language">
-            <option value="ko-KR">Korean</option>
-            <option value="zh-CN">Chinese</option>
-            <option value="en-US">English</option>
-        </select><br>
-        <button type="submit" style="margin-top: 20px;">Convert to Speech</button>
-    </form>
+    <div class="container">
+        <img src="/static/new_logo.png" style="max-width: 200px; margin-bottom: 20px;">
+        <h1>CSV to WAV Converter</h1>
+        
+        <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Upload CSV file:</label>
+                <input type="file" id="file" name="file" accept=".csv" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="language">Select Language:</label>
+                <select id="language" name="language">
+                    <option value="ko-KR">Korean</option>
+                    <option value="zh-CN">Chinese</option>
+                    <option value="en-US">English</option>
+                </select>
+            </div>
 
-    <div id="result"></div>
+            <div class="form-group">
+                <label for="voice">Select Voice (성우 선택):</label>
+                <select id="voice" name="voice">
+                    <!-- 동적으로 채워짐 -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="engine">Select Engine (엔진 선택):</label>
+                <select id="engine" name="engine">
+                    <option value="auto">자동 (Neural 지원 시 Neural, 아니면 Standard)</option>
+                    <option value="neural">Neural (고품질, pitch 미지원)</option>
+                    <option value="standard">Standard (pitch 지원)</option>
+                </select>
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Standard 엔진을 선택하면 pitch 조절이 가능합니다.
+                </small>
+            </div>
+
+            <div class="form-group">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <label for="pitch">Pitch (피치):</label>
+                        <span class="slider-value" id="pitchValue">0%</span>
+                    </div>
+                    <input type="range" id="pitch" name="pitch" min="-50" max="50" value="0" step="1">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 5px;">
+                        <span>-50% (낮음)</span>
+                        <span>0% (기본)</span>
+                        <span>+50% (높음)</span>
+                    </div>
+                    <div id="pitchDisabledMessage" class="pitch-disabled-message" style="display: none;">
+                        ⚠️ Neural 엔진은 pitch 조절을 지원하지 않습니다. Standard 엔진을 선택하시면 pitch 조절이 가능합니다.
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <label for="rate">Speed (속도):</label>
+                        <span class="slider-value" id="rateValue">0%</span>
+                    </div>
+                    <input type="range" id="rate" name="rate" min="-50" max="50" value="0" step="1">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 5px;">
+                        <span>-50% (느림)</span>
+                        <span>0% (기본)</span>
+                        <span>+50% (빠름)</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="submitBtn">Convert to Speech</button>
+        </form>
+
+        <div id="result"></div>
+
+        <div class="section-divider">
+            <div class="section-title">📝 텍스트 테스트</div>
+            <p style="color: #666; margin-bottom: 20px;">임의의 텍스트를 입력하여 음성을 테스트할 수 있습니다.</p>
+            
+            <form id="testForm">
+                <div class="form-group">
+                    <label for="testText">테스트 텍스트:</label>
+                    <textarea id="testText" name="testText" placeholder="음성으로 변환할 텍스트를 입력하세요..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="testLanguage">언어 선택:</label>
+                    <select id="testLanguage" name="testLanguage">
+                        <option value="ko-KR">Korean</option>
+                        <option value="zh-CN">Chinese</option>
+                        <option value="en-US">English</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="testVoice">성우 선택:</label>
+                    <select id="testVoice" name="testVoice">
+                        <!-- 동적으로 채워짐 -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="testEngine">엔진 선택:</label>
+                    <select id="testEngine" name="testEngine">
+                        <option value="auto">자동 (Neural 지원 시 Neural, 아니면 Standard)</option>
+                        <option value="neural">Neural (고품질, pitch 미지원)</option>
+                        <option value="standard">Standard (pitch 지원)</option>
+                    </select>
+                    <small style="color: #666; display: block; margin-top: 5px;">
+                        Standard 엔진을 선택하면 pitch 조절이 가능합니다.
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <label for="testPitch">Pitch (피치):</label>
+                            <span class="slider-value" id="testPitchValue">0%</span>
+                        </div>
+                        <input type="range" id="testPitch" name="testPitch" min="-50" max="50" value="0" step="1">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 5px;">
+                            <span>-50% (낮음)</span>
+                            <span>0% (기본)</span>
+                            <span>+50% (높음)</span>
+                        </div>
+                        <div id="testPitchDisabledMessage" class="pitch-disabled-message" style="display: none;">
+                            ⚠️ Neural 엔진은 pitch 조절을 지원하지 않습니다. Standard 엔진을 선택하시면 pitch 조절이 가능합니다.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <label for="testRate">Speed (속도):</label>
+                            <span class="slider-value" id="testRateValue">0%</span>
+                        </div>
+                        <input type="range" id="testRate" name="testRate" min="-50" max="50" value="0" step="1">
+                        <div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 5px;">
+                            <span>-50% (느림)</span>
+                            <span>0% (기본)</span>
+                            <span>+50% (빠름)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="testBtn" class="test-button">음성 테스트</button>
+            </form>
+
+            <div id="testResult"></div>
+        </div>
+    </div>
 
     <script>
+        // 슬라이더 값 실시간 업데이트
+        const pitchSlider = document.getElementById('pitch');
+        const rateSlider = document.getElementById('rate');
+        const pitchValue = document.getElementById('pitchValue');
+        const rateValue = document.getElementById('rateValue');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // 테스트 폼 슬라이더
+        const testPitchSlider = document.getElementById('testPitch');
+        const testRateSlider = document.getElementById('testRate');
+        const testPitchValue = document.getElementById('testPitchValue');
+        const testRateValue = document.getElementById('testRateValue');
+        const testBtn = document.getElementById('testBtn');
+
+        // 언어 및 성우 선택 요소
+        const languageSelect = document.getElementById('language');
+        const voiceSelect = document.getElementById('voice');
+        const testLanguageSelect = document.getElementById('testLanguage');
+        const testVoiceSelect = document.getElementById('testVoice');
+        
+        // 엔진 선택 요소
+        const engineSelect = document.getElementById('engine');
+        const testEngineSelect = document.getElementById('testEngine');
+        
+        // Pitch 비활성화 메시지 요소
+        const pitchDisabledMessage = document.getElementById('pitchDisabledMessage');
+        const testPitchDisabledMessage = document.getElementById('testPitchDisabledMessage');
+        
+        // Neural 지원 성우 목록
+        const neuralVoices = ['Seoyeon', 'Zhiyu', 'Joanna', 'Matthew', 'Salli', 'Kimberly', 
+                             'Kendra', 'Justin', 'Ivy', 'Joey'];
+        
+        // 엔진 선택에 따라 pitch 슬라이더 활성화/비활성화
+        function updatePitchSlider(engineSelect, pitchSlider, pitchValue, disabledMessage) {
+            const engine = engineSelect.value;
+            const form = engineSelect.closest('form');
+            const voiceSelectElement = form.querySelector('[name="voice"]') || form.querySelector('[name="testVoice"]');
+            const selectedVoice = voiceSelectElement ? voiceSelectElement.value : '';
+            const isNeuralVoice = neuralVoices.includes(selectedVoice);
+            
+            // Neural 엔진 선택 또는 (자동 선택 + Neural 지원 성우)인 경우 pitch 비활성화
+            if (engine === 'neural' || (engine === 'auto' && isNeuralVoice)) {
+                pitchSlider.disabled = true;
+                pitchSlider.value = 0; // 기본값으로 리셋
+                pitchValue.textContent = '0%';
+                disabledMessage.style.display = 'block';
+            } else {
+                pitchSlider.disabled = false;
+                disabledMessage.style.display = 'none';
+            }
+        }
+
+        // 언어별 성우 목록 업데이트 함수
+        async function updateVoices(languageCode, voiceSelectElement) {
+            try {
+                const response = await fetch(`/api/voices/${languageCode}`);
+                const data = await response.json();
+                
+                // 기존 옵션 제거
+                voiceSelectElement.innerHTML = '';
+                
+                // 새로운 옵션 추가
+                data.voices.forEach(voice => {
+                    const option = document.createElement('option');
+                    option.value = voice.id;
+                    option.textContent = voice.name;
+                    if (voice.id === data.default) {
+                        option.selected = true;
+                    }
+                    voiceSelectElement.appendChild(option);
+                });
+                
+                // 성우 목록 업데이트 후 pitch 슬라이더 상태 확인
+                const form = voiceSelectElement.closest('form');
+                if (form) {
+                    const engineSelectElement = form.querySelector('[name="engine"]') || form.querySelector('[name="testEngine"]');
+                    const pitchSliderElement = form.querySelector('[name="pitch"]') || form.querySelector('[name="testPitch"]');
+                    const pitchValueElement = form.querySelector('#pitchValue') || form.querySelector('#testPitchValue');
+                    const disabledMessageElement = form.querySelector('#pitchDisabledMessage') || form.querySelector('#testPitchDisabledMessage');
+                    
+                    if (engineSelectElement && pitchSliderElement && pitchValueElement && disabledMessageElement) {
+                        updatePitchSlider(engineSelectElement, pitchSliderElement, pitchValueElement, disabledMessageElement);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading voices:', error);
+            }
+        }
+
+        // 초기 로드 시 성우 목록 설정
+        updateVoices(languageSelect.value, voiceSelect);
+        updateVoices(testLanguageSelect.value, testVoiceSelect);
+
+        // 언어 변경 시 성우 목록 업데이트
+        languageSelect.addEventListener('change', function() {
+            updateVoices(this.value, voiceSelect);
+        });
+
+        testLanguageSelect.addEventListener('change', function() {
+            updateVoices(this.value, testVoiceSelect);
+        });
+        
+        // 엔진 선택 변경 시 pitch 슬라이더 업데이트
+        engineSelect.addEventListener('change', function() {
+            updatePitchSlider(engineSelect, pitchSlider, pitchValue, pitchDisabledMessage);
+        });
+        
+        testEngineSelect.addEventListener('change', function() {
+            updatePitchSlider(testEngineSelect, testPitchSlider, testPitchValue, testPitchDisabledMessage);
+        });
+        
+        // 성우 선택 변경 시에도 pitch 슬라이더 업데이트 (자동 선택인 경우)
+        voiceSelect.addEventListener('change', function() {
+            if (engineSelect.value === 'auto') {
+                updatePitchSlider(engineSelect, pitchSlider, pitchValue, pitchDisabledMessage);
+            }
+        });
+        
+        testVoiceSelect.addEventListener('change', function() {
+            if (testEngineSelect.value === 'auto') {
+                updatePitchSlider(testEngineSelect, testPitchSlider, testPitchValue, testPitchDisabledMessage);
+            }
+        });
+        
+        // 초기 로드 시 pitch 슬라이더 상태 확인
+        setTimeout(() => {
+            updatePitchSlider(engineSelect, pitchSlider, pitchValue, pitchDisabledMessage);
+            updatePitchSlider(testEngineSelect, testPitchSlider, testPitchValue, testPitchDisabledMessage);
+        }, 500);
+
+        pitchSlider.addEventListener('input', function() {
+            const value = this.value;
+            pitchValue.textContent = (value >= 0 ? '+' : '') + value + '%';
+        });
+
+        rateSlider.addEventListener('input', function() {
+            const value = this.value;
+            rateValue.textContent = (value >= 0 ? '+' : '') + value + '%';
+        });
+
+        // 테스트 폼 슬라이더 이벤트
+        testPitchSlider.addEventListener('input', function() {
+            const value = this.value;
+            testPitchValue.textContent = (value >= 0 ? '+' : '') + value + '%';
+        });
+
+        testRateSlider.addEventListener('input', function() {
+            const value = this.value;
+            testRateValue.textContent = (value >= 0 ? '+' : '') + value + '%';
+        });
+
+        // 폼 제출 처리
         document.getElementById('uploadForm').onsubmit = async function(event) {
             event.preventDefault();
 
             const formData = new FormData(this);
-            const response = await fetch('/convert', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
             const resultDiv = document.getElementById('result');
+            
+            // 로딩 상태 표시
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Converting...';
+            resultDiv.className = 'loading';
+            resultDiv.innerHTML = '음성 파일을 생성하는 중입니다. 잠시만 기다려주세요...';
 
-            if (result.success) {
-                resultDiv.innerHTML = `<a href="${result.file}" download>Download WAV Files</a>`;
-            } else {
-                resultDiv.innerHTML = `Error: ${result.message}`;
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const contentType = response.headers.get('content-type') || '';
+                
+                if (response.ok && contentType.includes('application/zip')) {
+                    // ZIP 파일 다운로드
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'output_wavs.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = '✓ 음성 파일 생성이 완료되었습니다! ZIP 파일이 다운로드되었습니다.';
+                } else {
+                    // 에러 응답 처리 - JSON인지 확인 후 파싱
+                    let errorMessage = 'Unknown error';
+                    try {
+                        if (contentType.includes('application/json')) {
+                            const result = await response.json();
+                            errorMessage = result.message || 'Unknown error';
+                        } else {
+                            // JSON이 아닌 경우 텍스트로 읽기 시도
+                            const text = await response.text();
+                            errorMessage = text || `HTTP ${response.status}: ${response.statusText}`;
+                        }
+                    } catch (parseError) {
+                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `Error: ${errorMessage}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Convert to Speech';
             }
-        }
+        };
+
+        // 테스트 폼 제출 처리
+        document.getElementById('testForm').onsubmit = async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const resultDiv = document.getElementById('testResult');
+            
+            // 로딩 상태 표시
+            testBtn.disabled = true;
+            testBtn.textContent = '생성 중...';
+            resultDiv.className = 'loading';
+            resultDiv.innerHTML = '음성 파일을 생성하는 중입니다...';
+
+            try {
+                const response = await fetch('/test_convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    
+                    // 오디오 플레이어 생성
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = `
+                        <div class="audio-container">
+                            <p style="margin-bottom: 10px; font-weight: bold;">✓ 음성 파일이 생성되었습니다!</p>
+                            <audio controls class="audio-player">
+                                <source src="${url}" type="audio/wav">
+                                브라우저가 오디오 재생을 지원하지 않습니다.
+                            </audio>
+                            <div style="margin-top: 10px;">
+                                <a href="${url}" download="test_audio.wav" style="color: #2196F3; text-decoration: none; font-weight: bold;">📥 WAV 파일 다운로드</a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const result = await response.json();
+                    resultDiv.className = 'error';
+                    resultDiv.innerHTML = `Error: ${result.message || 'Unknown error'}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `Error: ${error.message}`;
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = '음성 테스트';
+            }
+        };
     </script>
 </body>
 </html>
